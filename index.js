@@ -1,15 +1,15 @@
 const express = require('express');
 const jsforce = require('jsforce');
-const { salesforce, server} = require('./src/config.js');
+const {PORT, APP_URL} = require('./src/config.js');
 const cors = require('cors');
 const app = express();
 
 const authController = require('./src/controllers/authController.js');
 const expenseController = require('./src/controllers/expenseController.js');
 
-const port = server.port || 3002;  
+const port = PORT || 3002;  
 
-const allowedOrigins = [server.app_url]; // Add your frontend URL here
+const allowedOrigins = [APP_URL]; // Add your frontend URL here
 
 app.use(cors({
   origin: allowedOrigins, // Adjust this to your frontend URL

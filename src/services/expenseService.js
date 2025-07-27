@@ -1,6 +1,6 @@
 const jsforce  = require('jsforce');
 
-const { salesforce, server } = require('../config.js'); 
+const { SF_Login_URL, SF_Client_ID, SF_Client_Secret, SF_Callback_URL} = require('../config.js'); 
 
 const LocalStorage = require('node-localstorage').LocalStorage;
 const lcStorage = new LocalStorage('./info');
@@ -14,10 +14,10 @@ const queryExpenses = async (req, res) => {
     }
     const conn = new jsforce.Connection({
         oauth2: {
-            loginUrl: salesforce.loginUrl,
-            clientId: salesforce.clientId,
-            clientSecret: salesforce.clientSecret,
-            redirectUri: salesforce.redirectUri
+            loginUrl: SF_Login_URL,
+            clientId : SF_Client_ID,
+            clientSecret : SF_Client_Secret,
+            redirectUri : SF_Callback_URL
         },
         accessToken: lcStorage.getItem('accessToken'),
         instanceUrl: lcStorage.getItem('instanceUrl')
@@ -30,6 +30,21 @@ const queryExpenses = async (req, res) => {
     } catch (error) {
         console.error('Error fetching expenses:', error);
         handleSalesforceError(error, res);
+    }
+}
+
+const handleSalesforceError = (error, res) => {
+    console.log('Handling Salesforce error:', JSON.stringify(error));
+    if(/*error.statusCode === 404 && (error.code === 'NOT_FOUND' || */error.errorCode === 'INVALID_SESSION_ID') {
+        console.error('Session expired or not found. Redirecting to login.');
+        lcStorage.clear(); // Clear local storage
+        res.status(200).send({});
+    }else{
+        console.error('Salesforce error:', error);
+        res.status(error.statusCode || 500).send({
+            error: 'Salesforce API Error',
+            message: error.message || 'An unexpected error occurred'
+        });
     }
 }
 

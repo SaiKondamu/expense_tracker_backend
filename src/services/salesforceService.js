@@ -1,16 +1,16 @@
 const jsforce  = require('jsforce');
 
-const { salesforce, server } = require('../config.js'); 
+const { SF_Login_URL, SF_Client_ID, SF_Client_Secret, SF_Callback_URL, APP_URL} = require('../config.js'); 
 
 const LocalStorage = require('node-localstorage').LocalStorage;
 const lcStorage = new LocalStorage('./info');
 
 const oauth2 = new jsforce.OAuth2({
   // you can change loginUrl to connect to sandbox or prerelease env.
-  loginUrl : salesforce.loginUrl,
-  clientId : salesforce.clientId,
-  clientSecret : salesforce.clientSecret,
-  redirectUri : salesforce.redirectUri
+  loginUrl : SF_Login_URL,
+  clientId : SF_Client_ID,
+  clientSecret : SF_Client_Secret,
+  redirectUri : SF_Callback_URL
 });
 
 const login = (req, res) => {
@@ -47,7 +47,7 @@ const callback = async (req, res) => {
     console.log("Org ID: " + userInfo.organizationId);
     //res.send('Authorization successful! You can close this window now.');
     // You can redirect to a success page or send a response
-    res.redirect(server.app_url); // Adjust the redirect as needed
+    res.redirect(APP_URL); // Adjust the redirect as needed
 }
 
 const createConnection = (res) => {
@@ -55,7 +55,7 @@ const createConnection = (res) => {
     const instanceUrl = lcStorage.getItem('instanceUrl');
     if (!accessToken || !instanceUrl) {
         console.error('No access token or instance URL found in local storage');
-        return res.status(401).send('Unauthorized: No access token or instance URL found');
+        return res.status(200).send('Unauthorized: No access token or instance URL found');
     }
     return new jsforce.Connection({ 
         instanceUrl: instanceUrl,
@@ -98,6 +98,6 @@ const logout = (req, res) => {
     console.log('Logging out...');
     lcStorage.clear(); // Clear local storage
     console.log('Local storage cleared. Redirecting to login page.');
-    res.redirect(`${server.app_url}/login`); // Adjust the redirect as needed
+    res.redirect(`${APP_URL}/login`); // Adjust the redirect as needed
 }
 module.exports = {login, callback, whoAmI, logout};
