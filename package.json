@@ -1,0 +1,19 @@
+{
+  "name": "lwr-project-expense_tracker_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Sai Siddhartha Kondamu",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jsforce": "^3.9.1",
+    "node-localstorage": "^3.0.5"
+  }
+}
